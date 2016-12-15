@@ -14,14 +14,16 @@
  */
 #include <JPetUnpacker/Unpacker2/EventIII.h>
 #include <JPetWriter/JPetWriter.h>
-#include "TGraph.h"
 #include "ModuleA.h"
 
 ModuleA::ModuleA(const char * name, const char * description)
 :JPetTask(name, description),fCurrEventNumber(0){}
 
 void ModuleA::init(const JPetTaskInterface::Options& opts){
-    getStatistics().createHistogram( new TH1F("ChannelsPerEvt","Channels fired in one event", 401, -0.5, 400.5) );
+
+    getStatistics().createHistogram( new TH1F("HitsPerEvtCh","Hits per channel in one event", 50, -0.5, 49.5) );
+    getStatistics().createHistogram( new TH1F("ChannelsPerEvt","Channels fired in one event", 200, -0.5, 199.5) );
+
 }
 
 ModuleA::~ModuleA(){}
@@ -30,6 +32,7 @@ void ModuleA::exec(){
     if(auto evt = reinterpret_cast</*const*/ EventIII*const>(getEvent())){
 
         int ntdc = evt->GetTotalNTDCChannels();
+        getStatistics().getHisto1D("ChannelsPerEvt").Fill( ntdc );
 
 
         auto tdcHits = evt->GetTDCChannelsArray();
@@ -42,12 +45,22 @@ void ModuleA::exec(){
         for (int i = 0; i < ntdc; ++i) {
             auto tdcChannel = dynamic_cast</*const*/ TDCChannel*const>(tdcHits->At(i));
             auto tomb_number =  tdcChannel->GetChannel();
+
             if (tomb_number % 65 == 0) { // skip trigger signals from TRB
                 continue;
             }
-            JPetTOMBChannel& tomb_channel = getParamBank().getTOMBChannel(tomb_number);
 
-            for(int j = tdcChannel->GetHitsNum()-1; j < tdcChannel->GetHitsNum(); ++j){
+            JPetTOMBChannel& tomb_channel = getParamBank().getTOMBChannel(tomb_number);
+            // one TDC channel may record multiple signals in one TSlot
+            // iterate over all signals from one TDC channel
+            // analyze number of hits per channel
+
+
+            int TDCchannelsNb = tdcChannel->GetHitsNum();
+            getStatistics().getHisto1D("HitsPerEvtCh").Fill( TDCchannelsNb );
+
+            for(int j = 0; j < TDCchannelsNb; ++j){
+
                 JPetSigCh sigChTmpLead, sigChTmpTrail;
                 sigChTmpLead.setDAQch(tomb_number);
                 sigChTmpTrail.setDAQch(tomb_number);
@@ -65,12 +78,15 @@ void ModuleA::exec(){
                 sigChTmpTrail.setTOMBChannel(tomb_channel);
                 sigChTmpLead.setThreshold(tomb_channel.getThreshold());
                 sigChTmpTrail.setThreshold(tomb_channel.getThreshold());
+
                 // check for empty TDC times
                 if( tdcChannel->GetLeadTime(j) == -100000 )continue;
                 if( tdcChannel->GetTrailTime(j) == -100000 )continue;
+
                 // finally, set the times in ps [raw times are in ns]
                 sigChTmpLead.setValue(tdcChannel->GetLeadTime(j) * 1000.);
                 sigChTmpTrail.setValue(tdcChannel->GetTrailTime(j) * 1000.);
+
                 tslot.addCh(sigChTmpLead);
                 tslot.addCh(sigChTmpTrail);
             }

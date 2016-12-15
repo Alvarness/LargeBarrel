@@ -17,7 +17,7 @@
 #include <JPetManager/JPetManager.h>
 #include <JPetTaskLoader/JPetTaskLoader.h>
 #include "ModuleA.h"
-// #include "ModuleB.h"
+#include "ModuleB.h"
 // #include "ModuleC.h"
 // #include "ModuleD.h"
 
@@ -36,11 +36,11 @@ int main(int argc, char* argv[]) {
                         "Process unpacked HLD file into a tree of JPetTSlot objects"));
     });
 
-  // manager.registerTask([](){
-  //     return new JPetTaskLoader("tslot.raw", "raw.sig",
-  //               new ModuleB("Module: assemble signals",
-  //                      "Assemble raw PMT signals from time window data"));
-  //   });
+  manager.registerTask([](){
+      return new JPetTaskLoader("tslot.raw", "raw.sig",
+                new ModuleB("Module: assemble signals",
+                       "Assemble raw PMT signals from time window data"));
+    });
 
   // manager.registerTask([](){
   //     return new JPetTaskLoader("raw.sig", "phys.hit",

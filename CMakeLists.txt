@@ -11,12 +11,12 @@ cmake_minimum_required(VERSION 2.6)
 ### when creating a new project,
 ### set this section appropriately for your project
 ######################################################################
-set(projectName Multiplicity)
+set(projectName LargeBarrel)
 
 set(AUXILLIARY_FILES
-  run.sh
+  # run.sh
   conf_trb3.xml
-  README
+  README.md
   )
 
 set(ROOT_SCRIPTS
@@ -67,7 +67,7 @@ foreach( file_i ${AUXILLIARY_FILES})
     COMMAND ${CMAKE_COMMAND}
     ARGS -E ${CP_CMD} ${CMAKE_CURRENT_SOURCE_DIR}/${file_i} ${CMAKE_CURRENT_BINARY_DIR}/${file_i}
     )
-# endforeach( file_i )
+endforeach( file_i )
 
 # # copy the ROOT scripts
 # foreach( file_i ${ROOT_SCRIPTS})
