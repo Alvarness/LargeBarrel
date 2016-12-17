@@ -16,11 +16,13 @@
 #ifndef MODULEA_H
 #define MODULEA_H
 
+
 #include <vector>
 #include <JPetTask/JPetTask.h>
 #include <JPetTimeWindow/JPetTimeWindow.h>
 #include <JPetParamBank/JPetParamBank.h>
 #include <JPetParamManager/JPetParamManager.h>
+#include <JPetTOMBChannel/JPetTOMBChannel.h>
 
 class JPetWriter;
 
@@ -43,10 +45,13 @@ class ModuleA: public JPetTask{
 
     protected:
         void saveTimeWindow( JPetTimeWindow slot);
+        JPetSigCh generateSigCh(const JPetTOMBChannel & channel, JPetSigCh::EdgeType edge) const;
         JPetWriter* fWriter;
         JPetParamManager* fParamManager;
         long long int fCurrEventNumber;
-        int EventNb = 0;
+        const double kMaxTime = 0.;
+        const double kMinTime = -1.e6;
+
 };
 
 #endif /*  !MODULEA_H */
