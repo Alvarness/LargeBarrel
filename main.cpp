@@ -36,23 +36,6 @@ int main(int argc, char* argv[]) {
                         "Process unpacked HLD file into a tree of JPetTSlot objects"));
     });
 
-  // manager.registerTask([](){
-  //     return new JPetTaskLoader("tslot.raw", "raw.sig",
-  //               new ModuleB("Module: assemble signals",
-  //                      "Assemble raw PMT signals from time window data"));
-  //   });
-
-  // manager.registerTask([](){
-  //     return new JPetTaskLoader("raw.sig", "phys.hit",
-  //               new ModuleC("Module: Pair signals",
-  //                     "Create hits from pairs of PMT signals"));
-  //   });
-
-  // manager.registerTask([](){
-  //     return new JPetTaskLoader("phys.hit", "phys.hit.means",
-  //               new ModuleD("Module D: Make histograms for hits",
-  //                     "Only make timeDiff histos and produce mean timeDiff value for each threshold and slot to be used by the next module"));
-  //   });
 
   manager.run();
 }
