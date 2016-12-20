@@ -10,19 +10,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *  @file TaskA.h
+ *  @file ModuleC2.h
  */
 
-#ifndef MODULEA_H
-#define MODULEA_H
+#ifndef MODULEC2_H
+#define MODULEC2_H
 
-
-#include <vector>
 #include <JPetTask/JPetTask.h>
-#include <JPetTimeWindow/JPetTimeWindow.h>
-#include <JPetParamBank/JPetParamBank.h>
-#include <JPetParamManager/JPetParamManager.h>
-#include <JPetTOMBChannel/JPetTOMBChannel.h>
+#include <JPetHit/JPetHit.h>
+#include <JPetRawSignal/JPetRawSignal.h>
+#include <JPetRecoSignal/JPetRecoSignal.h>
 
 class JPetWriter;
 
@@ -32,27 +29,18 @@ class JPetWriter;
 #   define override
 #endif
 
-class ModuleA: public JPetTask{
+class ModuleC2: public JPetTask {
+
     public:
-        ModuleA(const char * name, const char * description);
-        virtual ~ModuleA();
+        ModuleC2(const char * name, const char * description);
+        virtual ~ModuleC2();
         virtual void init(const JPetTaskInterface::Options& opts)override;
         virtual void exec()override;
         virtual void terminate()override;
         virtual void setWriter(JPetWriter* writer)override;
-        virtual void setParamManager(JPetParamManager* paramManager)override;
-        const JPetParamBank& getParamBank()const;
 
     protected:
-        void saveTimeWindow( JPetTimeWindow slot);
-        JPetSigCh generateSigCh(const JPetTOMBChannel & channel, JPetSigCh::EdgeType edge) const;
         JPetWriter* fWriter;
-        JPetParamManager* fParamManager;
-        long long int fCurrEventNumber;
-
-        const double kMaxTime = 0.;     //
-        const double kMinTime = -1.e6;  //
-
 };
 
-#endif /*  !MODULEA_H */
+#endif /*  !MODULEC2_H */

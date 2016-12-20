@@ -36,6 +36,8 @@ void ModuleB::init(const JPetTaskInterface::Options& opts){
         getStatistics().createHistogram( new TH1F(histo_name, histo_name, 6, -0.5, 5.5) );
     }
 
+    getStatistics().createHistogram( new TH1F("thr1=0","Total number of points if there was no info at thr1" , 16, -0.5, 15.5) );
+    getStatistics().createHistogram( new TH1F("tdiff","Time diff" , 2*pow(10,6), -pow(10,9), pow(10,9)));
 
 }
 
@@ -91,19 +93,50 @@ void ModuleB::exec(){
 
         for(auto & pmSignalPair : signals){
 
-            auto & signal = pmSignalPair.second;
+            auto & pmSignals = pmSignalPair.second;
 
-            signal.setTimeWindowIndex( timeWindow->getIndex() );
+            auto leadSig = pmSignals.getPoints(JPetSigCh::Leading);
 
-            const auto & pmt = getParamBank().getPM(pmSignalPair.first);
+            vector<JPetSigCh> thr1, thr2, thr3, thr4;
 
-            signal.setPM(pmt);
-            signal.setBarrelSlot(pmt.getBarrelSlot());
+            for(auto & point : leadSig){
 
-            fWriter->write(signal);
+                if(point.getThresholdNumber() == 1) thr1.push_back(point);
+                if(point.getThresholdNumber() == 2) thr2.push_back(point);
+                if(point.getThresholdNumber() == 3) thr3.push_back(point);
+                if(point.getThresholdNumber() == 4) thr4.push_back(point);
+            }
 
-            getStatistics().getHisto1D("Lead").Fill(signal.getNumberOfLeadingEdgePoints());
+            getStatistics().getHisto1D("PointsOnThr1").Fill(thr1.size());
+            getStatistics().getHisto1D("PointsOnThr2").Fill(thr2.size());
+            getStatistics().getHisto1D("PointsOnThr3").Fill(thr3.size());
+            getStatistics().getHisto1D("PointsOnThr4").Fill(thr4.size());
+
+            if(thr1.size() == 0) getStatistics().getHisto1D("thr1=0").Fill(thr2.size() + thr3.size() + thr4.size());
+
+            getStatistics().getHisto1D("Lead").Fill(leadSig.size());
+
+            sort(thr1.begin(), thr1.end(), [](const JPetSigCh & hit1, const JPetSigCh & hit2){return hit1.getValue() < hit2.getValue();});
+            if(thr1.size() > 1){
+
+                for(int i = 1; i < thr1.size(); i++ ){
+
+                    getStatistics().getHisto1D("tdiff").Fill(thr1[i].getValue() - thr1[i-1].getValue());
+                }
+            }
         }
+
+
+            // signal.setTimeWindowIndex( timeWindow->getIndex() );
+
+            // const auto & pmt = getParamBank().getPM(pmSignalPair.first);
+
+            // signal.setPM(pmt);
+            // signal.setBarrelSlot(pmt.getBarrelSlot());
+
+            // fWriter->write(signal);
+
+
     }
 }
 

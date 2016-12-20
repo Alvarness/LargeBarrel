@@ -12,7 +12,8 @@
  *
  *  @file ModuleA.cpp
  */
-#include <JPetUnpacker/Unpacker2/EventIII.h>
+
+#include <Unpacker2/Unpacker2/EventIII.h>
 #include <JPetWriter/JPetWriter.h>
 #include "ModuleA.h"
 
@@ -71,7 +72,6 @@ void ModuleA::exec(){
             const int kNumHits = tdcChannel->GetHitsNum();
 
             for(int j = 0; j < kNumHits; ++j){
-
               // check for unreasable times
               // the times should be negative (measured w.r.t end of time window)
               // and not smaller than -1*timeWindowWidth (which can vary for different)
@@ -118,15 +118,15 @@ const JPetParamBank& ModuleA::getParamBank()const{
 
 JPetSigCh ModuleA::generateSigCh(const JPetTOMBChannel & channel, JPetSigCh::EdgeType edge) const{
 
-  JPetSigCh sigch;
-  sigch.setDAQch(channel.getChannel());
-  sigch.setType(edge);
-  sigch.setThresholdNumber(channel.getLocalChannelNumber());
-  sigch.setThreshold(channel.getThreshold());
-  sigch.setPM(channel.getPM());
-  sigch.setFEB(channel.getFEB());
-  sigch.setTRB(channel.getTRB());
-  sigch.setTOMBChannel(channel);
+    JPetSigCh sigch;
+    sigch.setDAQch(channel.getChannel());
+    sigch.setType(edge);
+    sigch.setThresholdNumber(channel.getLocalChannelNumber());
+    sigch.setThreshold(channel.getThreshold());
+    sigch.setPM(channel.getPM());
+    sigch.setFEB(channel.getFEB());
+    sigch.setTRB(channel.getTRB());
+    sigch.setTOMBChannel(channel);
 
   return sigch;
 }

@@ -10,19 +10,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *  @file TaskA.h
+ *  @file ModuleD.h
  */
 
-#ifndef MODULEA_H
-#define MODULEA_H
+#ifndef MODULED_H
+#define MODULED_H
 
-
-#include <vector>
 #include <JPetTask/JPetTask.h>
-#include <JPetTimeWindow/JPetTimeWindow.h>
-#include <JPetParamBank/JPetParamBank.h>
-#include <JPetParamManager/JPetParamManager.h>
-#include <JPetTOMBChannel/JPetTOMBChannel.h>
+#include <JPetHit/JPetHit.h>
+#include <JPetRawSignal/JPetRawSignal.h>
 
 class JPetWriter;
 
@@ -32,27 +28,23 @@ class JPetWriter;
 #   define override
 #endif
 
-class ModuleA: public JPetTask{
+class ModuleD:public JPetTask {
+
     public:
-        ModuleA(const char * name, const char * description);
-        virtual ~ModuleA();
+        ModuleD(const char * name, const char * description);
+        virtual ~ModuleD();
         virtual void init(const JPetTaskInterface::Options& opts)override;
         virtual void exec()override;
         virtual void terminate()override;
         virtual void setWriter(JPetWriter* writer)override;
-        virtual void setParamManager(JPetParamManager* paramManager)override;
-        const JPetParamBank& getParamBank()const;
 
     protected:
-        void saveTimeWindow( JPetTimeWindow slot);
-        JPetSigCh generateSigCh(const JPetTOMBChannel & channel, JPetSigCh::EdgeType edge) const;
+        std::vector<JPetPhysSignal> fSignals;
+        std::vector<JPetHit> createHits(const std::vector<JPetPhysSignal>& signals);
+        void saveHits(const std::vector<JPetHit>&hits);
         JPetWriter* fWriter;
-        JPetParamManager* fParamManager;
-        long long int fCurrEventNumber;
-
-        const double kMaxTime = 0.;     //
-        const double kMinTime = -1.e6;  //
+        const double TIME_WINDOW = 50000; /* in ps -> 50ns*/
 
 };
 
-#endif /*  !MODULEA_H */
+#endif /*  !MODULED_H */
